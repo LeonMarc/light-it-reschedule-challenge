@@ -64,8 +64,15 @@ Tests tied to known defects are marked with Playwright's [`test.fail()`](https:/
 | Reschedule: appointment moved to another slot | passes | |
 | Reschedule: card updates without a reload | expected failure | BUG-01, screen keeps the old values |
 | Reschedule: past date cannot be chosen | expected failure | BUG-08, past dates are saved |
+| Accessibility: login, dashboard, booking, list, reschedule form | passes while only the known violations are present | IMP-11 to IMP-13 |
 
 Bug IDs refer to the Part 1 functional test report.
+
+## Accessibility check (extra)
+
+`tests/accessibility.spec.ts` runs [axe-core](https://github.com/dequelabs/axe-core) against every screen of the reschedule journey (WCAG 2.1 A and AA) and attaches the full axe report to each test.
+
+The violations found today are a documented baseline in `src/a11y/known-violations.ts`, each linked to an improvement in the Part 1 report (missing image alternatives, low contrast, and unlabeled fields in the reschedule form). A test fails when a screen has a **new** violation, and also when a **known** one disappears, so the baseline is kept up to date and the fix stays protected.
 
 ## API tests (Postman collection)
 
@@ -102,9 +109,10 @@ src/api/api-client.ts         backend client for data setup, cleanup and checks
 src/fixtures/test.ts          page objects, API client, unique note, test appointment, cleanup
 src/pages/                    page objects: login, book appointment, appointments list
 src/utils/dates.ts            relative dates and locale-aware formatting
+src/a11y/known-violations.ts  accessibility baseline per screen
 api-tests/                    Postman collection, environment and Newman runner
 tests/auth.setup.ts           one UI login, session saved for the other tests
-tests/*.spec.ts               the three flows
+tests/*.spec.ts               the three flows and the accessibility check
 .github/workflows/e2e.yml     CI: runs both suites and uploads their reports
 ```
 
