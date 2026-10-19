@@ -1,5 +1,7 @@
 # MedAppoint - test automation
 
+[![Tests](https://github.com/LeonMarc/light-it-reschedule-challenge/actions/workflows/e2e.yml/badge.svg)](https://github.com/LeonMarc/light-it-reschedule-challenge/actions/workflows/e2e.yml)
+
 Automated tests for the MedAppoint patient portal:
 
 - **UI automation (Part 4):** [Playwright](https://playwright.dev) and TypeScript, in `tests/`.
@@ -119,6 +121,11 @@ tests/*.spec.ts               the three flows and the accessibility check
 ## CI
 
 `.github/workflows/e2e.yml` runs on GitHub Actions, on demand or on push to `main`: first the API suite, then type checking and the UI suite (one after the other, since both use the same test account). Add `E2E_EMAIL` and `E2E_PASSWORD` as repository secrets. The JUnit results and the Playwright HTML report are uploaded as artifacts.
+
+## Possible next steps
+
+- **Live results dashboard.** CI could turn the Newman and Playwright results into an HTML page published on GitHub Pages, showing on every push which known defects are still reproduced. Today the badge above gives the overall state, and a known-bug test that starts passing already turns the run red.
+- **More flows once the defects are fixed.** Cancelling an appointment (blocked today by the cancel defect, AF-01) and the dashboard's next appointment (BUG-07).
 
 ## AI usage
 
