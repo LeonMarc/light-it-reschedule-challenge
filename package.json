@@ -1,0 +1,22 @@
+{
+  "name": "medappoint-reschedule-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UI automation for the MedAppoint QA challenge: login, booking and rescheduling flows.",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^20.14.0",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.5.0"
+  }
+}
