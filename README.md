@@ -1,6 +1,11 @@
-# MedAppoint - UI automation
+# MedAppoint - test automation
 
-End-to-end tests for the MedAppoint patient portal, written with [Playwright](https://playwright.dev) and TypeScript. They cover the three flows that matter most for the user story under test:
+Automated tests for the MedAppoint patient portal:
+
+- **UI automation (Part 4):** [Playwright](https://playwright.dev) and TypeScript, in `tests/`.
+- **API tests (Part 3):** the Postman collection, run with Newman, in `api-tests/`.
+
+Both suites run with the same environment variables and in the same CI pipeline. The UI tests cover the three flows that matter most for the user story under test:
 
 > As a patient, I want to reschedule an existing appointment to another available time slot, without having to cancel and book from scratch.
 
@@ -23,8 +28,10 @@ npx playwright install chromium
 cp .env.example .env          # Windows (cmd): copy .env.example .env
 # edit .env and set E2E_EMAIL and E2E_PASSWORD
 
-# 3. Run the suite
-npm test
+# 3. Run the suites
+npm test              # UI (Playwright)
+npm run test:api      # API (Postman collection with Newman)
+npm run test:all      # both, API first
 
 # 4. Open the HTML report (screenshots, video and trace for any failure)
 npm run report
@@ -41,7 +48,7 @@ Other commands: `npm run test:headed` (see the browser), `npm run test:ui` (Play
 | `BASE_URL` | no | `https://light-it-qa-challenge.vercel.app` |
 | `API_URL` | no | `https://qa-challenge-backend.vercel.app` |
 
-They can also be set in the shell or in CI instead of `.env`. A missing credential stops the run with a message naming the variable.
+Wrap a value in double quotes if it contains `#`; otherwise everything after it is read as a comment. They can also be set in the shell or in CI instead of `.env`. A missing credential stops the run with a message naming the variable.
 
 ## What a passing run looks like
 
@@ -59,6 +66,20 @@ Tests tied to known defects are marked with Playwright's [`test.fail()`](https:/
 | Reschedule: past date cannot be chosen | expected failure | BUG-08, past dates are saved |
 
 Bug IDs refer to the Part 1 functional test report.
+
+## API tests (Postman collection)
+
+`api-tests/reschedule.postman_collection.json` is the Part 3 deliverable: 46 requests that log in automatically, create their own appointments, reschedule them, probe validation, business rules and security, and clean up. It can be imported into Postman with `api-tests/qa-challenge.postman_environment.json`, or run from here with `npm run test:api`.
+
+The collection asserts the expected behaviour, so assertions tagged `[API-01]` to `[API-15]` fail today because of known defects (listed in the collection description). `api-tests/run-api-tests.js` runs Newman and applies the same rule as `test.fail()` in the UI suite:
+
+| Result | Build |
+| --- | --- |
+| Only `[API-xx]` assertions fail | passes, with a summary of the defects reproduced |
+| Any other assertion or script fails | fails: a new problem |
+| An `[API-xx]` assertion passes | fails: the defect may be fixed, remove the tag so the test protects the fix |
+
+A JUnit report is written to `api-tests/results/junit.xml`.
 
 ## Design decisions
 
@@ -81,14 +102,15 @@ src/api/api-client.ts         backend client for data setup, cleanup and checks
 src/fixtures/test.ts          page objects, API client, unique note, test appointment, cleanup
 src/pages/                    page objects: login, book appointment, appointments list
 src/utils/dates.ts            relative dates and locale-aware formatting
+api-tests/                    Postman collection, environment and Newman runner
 tests/auth.setup.ts           one UI login, session saved for the other tests
 tests/*.spec.ts               the three flows
-.github/workflows/e2e.yml     CI: runs the suite and uploads the report
+.github/workflows/e2e.yml     CI: runs both suites and uploads their reports
 ```
 
 ## CI
 
-`.github/workflows/e2e.yml` runs type checking and the suite on GitHub Actions, on demand or on push to `main`. Add `E2E_EMAIL` and `E2E_PASSWORD` as repository secrets. The HTML report is uploaded as an artifact.
+`.github/workflows/e2e.yml` runs on GitHub Actions, on demand or on push to `main`: first the API suite, then type checking and the UI suite (one after the other, since both use the same test account). Add `E2E_EMAIL` and `E2E_PASSWORD` as repository secrets. The JUnit results and the Playwright HTML report are uploaded as artifacts.
 
 ## AI usage
 

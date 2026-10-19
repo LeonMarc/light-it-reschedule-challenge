@@ -17,6 +17,16 @@ export class LoginPage {
     await this.page.goto('/login');
   }
 
+  /** Waits until the login either reaches the dashboard or shows an error. */
+  async waitForOutcome(): Promise<void> {
+    await Promise.race([
+      this.page.waitForURL(/\/dashboard$/, { timeout: 15_000 }),
+      this.error.waitFor({ state: 'visible', timeout: 15_000 }),
+    ]).catch(() => {
+      /* neither happened: the URL assertion that follows reports it */
+    });
+  }
+
   async login(email: string, password: string): Promise<void> {
     await this.email.fill(email);
     await this.password.fill(password);

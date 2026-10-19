@@ -2,9 +2,11 @@
   "name": "medappoint-reschedule-e2e",
   "version": "1.0.0",
   "private": true,
-  "description": "UI automation for the MedAppoint QA challenge: login, booking and rescheduling flows.",
+  "description": "QA challenge automation: Playwright UI flows (login, booking, rescheduling) and the Postman API collection run with Newman.",
   "scripts": {
     "test": "playwright test",
+    "test:api": "node api-tests/run-api-tests.js",
+    "test:all": "npm run test:api && npm test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
@@ -17,6 +19,7 @@
     "@playwright/test": "^1.48.0",
     "@types/node": "^20.14.0",
     "dotenv": "^16.4.5",
+    "newman": "^6.2.3",
     "typescript": "^5.5.0"
   }
 }
